@@ -1,4 +1,4 @@
-# Monitor API
+# Vigil
 
 Push-based web monitoring API. User defines a query, system watches the web continuously and POSTs new results to a webhook.
 
