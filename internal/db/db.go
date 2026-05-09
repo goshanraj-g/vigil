@@ -13,8 +13,13 @@ func Connect(ctx context.Context) (*pgxpool.Pool, error) {
 	if url == "" {
 		return nil, fmt.Errorf("DATABASE_URL not set")
 	}
-	pool, err := pgxpool.New(ctx, url)
+	pool, err := pgxpool.New(ctx, url) // Create a database connection pool
 	if err != nil {
-		return 
+		return nil, fmt.Errorf("pgxpool.New: %w", err)
 	}
+
+	if err := pool.Ping(ctx); err != nil {
+		return nil, fmt.Errorf("db ping: %w", err)
+	}
+	return pool, nil
 }
