@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/goshanraj-g/vigil/internal/api"
 	"github.com/goshanraj-g/vigil/internal/db"
 )
 
@@ -37,8 +38,4 @@ func main() {
 	if err := http.ListenAndServe(":"+port, r); err != nil {
 		log.Fatalf("server: %v", err)
 	}
-
-
-
-
 }
