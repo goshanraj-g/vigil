@@ -2,7 +2,6 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE monitors (
     id      UUID    PRIMARY KEY DEFAULT gen_random_uuid(),
-    api_key_hash TEXT NOT NULL,
     query TEXT NOT NULL,
     webhook_url TEXT NOT NULL,
     schedule TEXT NOT NULL,

@@ -3,9 +3,8 @@ package models
 import "time"
 
 type Monitor struct {
-	ID             string `json:"id"`
-	APIKeyHash     string `json:"-"`
-	Query          string `json:"query"`
+	ID         string `json:"id"`
+	Query      string `json:"query"`
 	WebhookURL     string `json:"webhook_url"`
 	Schedule       string `json:"schedule"`
 	Status         string `json:"status"`
