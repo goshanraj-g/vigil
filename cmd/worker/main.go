@@ -12,9 +12,11 @@ import (
 	"github.com/goshanraj-g/vigil/internal/search"
 	"github.com/goshanraj-g/vigil/internal/worker"
 	"github.com/hibiken/asynq"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	_ = godotenv.Load()
 
 	ctx := context.Background()
 

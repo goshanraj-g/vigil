@@ -8,16 +8,18 @@ import (
 
 	"github.com/goshanraj-g/vigil/internal/api"
 	"github.com/goshanraj-g/vigil/internal/db"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	_ = godotenv.Load()
 
 	/*
-	Contexts: 
-	Contexts are a blank, never called context which lives for the lifetime of a program
-	Contexts carries two things through a call stack:
-	1) cancellation signal - "stop what you're doing"
-	2) deadline - "stop after this time"
+		Contexts:
+		Contexts are a blank, never called context which lives for the lifetime of a program
+		Contexts carries two things through a call stack:
+		1) cancellation signal - "stop what you're doing"
+		2) deadline - "stop after this time"
 	*/
 	ctx := context.Background()
 
