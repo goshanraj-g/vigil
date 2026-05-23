@@ -1,1 +1,55 @@
 package ai
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/anthropics/anthropic-sdk-go"
+	"github.com/goshanraj-g/vigil/internal/search"
+)
+
+type Client struct {
+	ai anthropic.Client
+}
+
+func New() (*Client, error) {
+	key := os.Getenv("ANTHROPIC_API_KEY")
+	if key == "" {
+		return nil, fmt.Errorf("ANTHROPIC_API_KEY not set")
+	}
+	return &Client{
+		ai: anthropic.NewClient(key), // anthropic SDK handles HTTP, retries and auth
+	}, nil
+}
+
+func (c *Client) IsRelevant(ctx context.Context, query string, result search.Result) (bool, error) {
+	prompt := fmt.Sprintf(`You are a relevance filter for a web monitoring system.
+
+	The user is monitoring the web for: %q
+
+	A search result was found:
+	Title: %s
+	URL: %s
+	Snippet: %s
+
+	Is this result relevant to what the user is monitoring for?
+	Reply with only YES or NO. No explanation.`, query, result.Title, result.URL, result.Snippet)
+
+	msg, err := c.ai.Messages.New(ctx, anthropic.MessageNewParams{
+		Model:     anthropic.ModelClaudeHaiku4_5,
+		MaxTokens: 10,
+		Messages: []anthropic.MessageParam{
+			anthropic.NewUserMessage(anthropic.NewTextBlock(prompt)),
+		},
+	})
+
+	if err != nil {
+		return false, fmt.Errorf("claude: %w", err)
+	}
+
+	text := strings.TrimSpace(strings.ToUpper(msg.Content[0].Text))
+	return text == "YES", nil
+
+}
