@@ -18,7 +18,7 @@ An AI web monitoring tool that searches the web continuously and delivers releva
 <img width="750" alt="technologies" src="https://github.com/user-attachments/assets/a16cf98b-7310-416a-8aee-29958539d3ff" />
 
 ## System Architecture
-<img width="750" alt="vigilarchitecture" src="https://github.com/user-attachments/assets/e6f12c91-9dd2-44ad-9868-19998ffe86d6" />
+<img width="750" alt="vigilsystemarchitecture" src="https://github.com/user-attachments/assets/bed2dbc3-e7e4-49a5-8dea-bef2d72043dc" />
 
 ## Inspiration
 I came across an article about [Parallel's Monitor API](https://parallel.ai/blog/monitor-api), and was pretty curious on how it actually works, so I build my own version to learn more.
