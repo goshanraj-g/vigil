@@ -58,3 +58,34 @@ Reply with only YES or NO. No explanation.`, query, result.Title, result.URL, re
 	return text == "YES", nil
 
 }
+
+func (c *Client) Summarize(ctx context.Context, query string, content string) (string, error) {
+	prompt := fmt.Sprintf(`You are a summarizer for a web monitoring system.
+
+The user is monitoring the web for: %q
+
+The following article was found and deemed relevant. Write a 2-3 sentence summary
+of the article, focusing on why it is relevant to what the user is monitoring for.
+Be concise and factual.
+
+Article content:
+%s`, query, content)
+
+	msg, err := c.ai.Messages.New(ctx, anthropic.MessageNewParams{
+		Model:     anthropic.ModelClaudeHaiku4_5,
+		MaxTokens: 200,
+		Messages: []anthropic.MessageParam{
+			anthropic.NewUserMessage(anthropic.NewTextBlock(prompt)),
+		},
+	})
+
+	if err != nil {
+		return "", fmt.Errorf("claude: %w", err)
+	}
+
+	if len(msg.Content) == 0 {
+		return "", fmt.Errorf("claude: empty respone")
+	}
+
+	return strings.TrimSpace(msg.Content[0].Text), nil
+}

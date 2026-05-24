@@ -10,21 +10,23 @@ import (
 
 	"github.com/goshanraj-g/vigil/internal/ai"
 	"github.com/goshanraj-g/vigil/internal/dedup"
+	"github.com/goshanraj-g/vigil/internal/scraper"
 	"github.com/goshanraj-g/vigil/internal/search"
 	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Handler struct {
-	pool   *pgxpool.Pool
-	search *search.Client
-	ai     *ai.Client
-	dedup  *dedup.Client
-	http   *http.Client
+	pool    *pgxpool.Pool
+	search  *search.Client
+	ai      *ai.Client
+	dedup   *dedup.Client
+	scraper *scraper.Client
+	http    *http.Client
 }
 
-func New(pool *pgxpool.Pool, s *search.Client, a *ai.Client, d *dedup.Client) *Handler {
-	return &Handler{pool: pool, search: s, ai: a, dedup: d, http: &http.Client{Timeout: 10 * time.Second}}
+func New(pool *pgxpool.Pool, s *search.Client, a *ai.Client, d *dedup.Client, sc *scraper.Client) *Handler {
+	return &Handler{pool: pool, search: s, ai: a, dedup: d, scraper: sc, http: &http.Client{Timeout: 10 * time.Second}}
 }
 
 func (h *Handler) Handle(ctx context.Context, t *asynq.Task) error {
@@ -64,16 +66,34 @@ func (h *Handler) Handle(ctx context.Context, t *asynq.Task) error {
 			continue
 		}
 
+		content, err := h.scraper.Scrape(ctx, r.URL)
+		if err != nil {
+			content = ""
+		}
+
+		summary := ""
+		if content != "" {
+			summary, err = h.ai.Summarize(ctx, query, content)
+			if err != nil {
+				summary = ""
+			}
+		}
+
 		_, err = h.pool.Exec(ctx,
-			`INSERT INTO results (monitor_id, url, title, snippet)
-			VALUES ($1, $2, $3, $4)`,
-			payload.MonitorID, r.URL, r.Title, r.Snippet,
+			`INSERT INTO results (monitor_id, url, title, snippet, summary)
+			VALUES ($1, $2, $3, $4, $5)`,
+			payload.MonitorID, r.URL, r.Title, r.Snippet, summary,
 		)
 		if err != nil {
 			return fmt.Errorf("insert result: %w", err)
 		}
 
-		body, err := json.Marshal(r)
+		body, err := json.Marshal(map[string]string{
+			"url":     r.URL,
+			"title":   r.Title,
+			"snippet": r.Snippet,
+			"summary": summary,
+		})
 		if err != nil {
 			return fmt.Errorf("marshal: %w", err)
 		}
