@@ -61,7 +61,7 @@ func main() {
 
 	client := asynq.NewClient(asynq.RedisClientOpt{Addr: redisURL})
 	defer client.Close()
-	sched := worker.NewScheduler(pool, client, time.Minute)
+	sched := worker.NewScheduler(pool, client, 30*time.Minute)
 
 	go sched.Run(ctx)
 	if err := srv.Run(mux); err != nil {
