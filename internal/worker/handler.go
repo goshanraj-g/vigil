@@ -66,7 +66,7 @@ func (h *Handler) Handle(ctx context.Context, t *asynq.Task) error {
 			continue
 		}
 
-		content, err := h.scraper.Scrape(ctx, r.URL)
+		content, err := h.scraper.Scrape(ctx, r.URL, query)
 		if err != nil {
 			content = ""
 		}

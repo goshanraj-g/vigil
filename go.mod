@@ -3,7 +3,6 @@ module github.com/goshanraj-g/vigil
 go 1.25.0
 
 require (
-	github.com/PuerkitoBio/goquery v1.12.0
 	github.com/anthropics/anthropic-sdk-go v1.45.0
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/hibiken/asynq v0.26.0
@@ -13,7 +12,6 @@ require (
 )
 
 require (
-	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
 	github.com/buger/jsonparser v1.1.2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -33,7 +31,6 @@ require (
 	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 	golang.org/x/crypto v0.49.0 // indirect
-	golang.org/x/net v0.52.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/sys v0.42.0 // indirect
 	golang.org/x/text v0.35.0 // indirect
