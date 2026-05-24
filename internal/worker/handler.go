@@ -36,11 +36,12 @@ func (h *Handler) Handle(ctx context.Context, t *asynq.Task) error {
 	}
 
 	var query, webhookURL string
+	var seeded bool
 
 	err := h.pool.QueryRow(ctx,
-		`SELECT query, webhook_url FROM monitors WHERE id = $1`,
+		`SELECT query, webhook_url, seeded FROM monitors WHERE id = $1`,
 		payload.MonitorID,
-	).Scan(&query, &webhookURL)
+	).Scan(&query, &webhookURL, &seeded)
 	if err != nil {
 		return fmt.Errorf("fetch monitor: %w", err)
 	}
@@ -48,6 +49,18 @@ func (h *Handler) Handle(ctx context.Context, t *asynq.Task) error {
 	results, err := h.search.Search(ctx, query)
 	if err != nil {
 		return fmt.Errorf("search: %w", err)
+	}
+
+	// seed dedup cache
+	if !seeded {
+		for _, r := range results {
+			_, _ = h.dedup.Seen(ctx, payload.MonitorID, r.URL)
+		}
+		_, err = h.pool.Exec(ctx, `UPDATE monitors SET seeded = true WHERE id = $1`, payload.MonitorID)
+		if err != nil {
+			return fmt.Errorf("mark seeded: %w", err)
+		}
+		return nil
 	}
 
 	for _, r := range results {
@@ -88,11 +101,13 @@ func (h *Handler) Handle(ctx context.Context, t *asynq.Task) error {
 			return fmt.Errorf("insert result: %w", err)
 		}
 
+		text := fmt.Sprintf("*%s*\n<%s>\n\n%s", r.Title, r.URL, summary)
+		if summary == "" {
+			text = fmt.Sprintf("*%s*\n<%s>\n\n%s", r.Title, r.URL, r.Snippet)
+		}
+
 		body, err := json.Marshal(map[string]string{
-			"url":     r.URL,
-			"title":   r.Title,
-			"snippet": r.Snippet,
-			"summary": summary,
+			"text": text,
 		})
 		if err != nil {
 			return fmt.Errorf("marshal: %w", err)

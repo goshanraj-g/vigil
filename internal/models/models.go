@@ -8,6 +8,7 @@ type Monitor struct {
 	WebhookURL string    `json:"webhook_url"`
 	Schedule   string    `json:"schedule"`
 	Status     string    `json:"status"`
+	Seeded     bool      `json:"seeded"`
 	CreatedAt  time.Time `json:"created_at"`
 }
 
