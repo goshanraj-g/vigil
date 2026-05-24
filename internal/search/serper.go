@@ -17,8 +17,9 @@ type Result struct {
 }
 
 type Client struct {
-	apiKey string
-	http   *http.Client
+	apiKey  string
+	http    *http.Client
+	baseURL string
 }
 
 type serperResponse struct {
@@ -35,8 +36,22 @@ func New() (*Client, error) {
 		return nil, fmt.Errorf("SERPER_API_KEY not set")
 	}
 	return &Client{
-		apiKey: key,
-		http:   &http.Client{Timeout: 10 * time.Second},
+		apiKey:  key,
+		http:    &http.Client{Timeout: 10 * time.Second},
+		baseURL: "https://google.serper.dev/search",
+	}, nil
+}
+
+// NewWithURL creates a client with a custom base URL — used in tests to point at a mock server.
+func NewWithURL(url string) (*Client, error) {
+	key := os.Getenv("SERPER_API_KEY")
+	if key == "" {
+		return nil, fmt.Errorf("SERPER_API_KEY not set")
+	}
+	return &Client{
+		apiKey:  key,
+		http:    &http.Client{Timeout: 10 * time.Second},
+		baseURL: url,
 	}, nil
 }
 
@@ -53,7 +68,7 @@ func (c *Client) Search(ctx context.Context, query string) ([]Result, error) {
 
 	// build JSON req
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
-		"https://google.serper.dev/search", bytes.NewReader(body))
+		c.baseURL, bytes.NewReader(body))
 	if err != nil {
 		return nil, fmt.Errorf("new request: %w", err)
 	}
