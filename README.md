@@ -21,7 +21,7 @@ An AI web monitoring tool that searches the web continuously and delivers releva
 <img width="750" alt="vigilsystemarchitecture" src="https://github.com/user-attachments/assets/bed2dbc3-e7e4-49a5-8dea-bef2d72043dc" />
 
 ## Inspiration
-I came across an article about [Parallel's Monitor API](https://parallel.ai/blog/monitor-api), and was pretty curious on how it actually works, so I build my own version to learn more.
+I came across an article about [Parallel's Monitor API](https://parallel.ai/blog/monitor-api), and was pretty curious on how it actually works, so I built my own version to learn more.
 
 ## Getting Started
 
@@ -38,14 +38,32 @@ I came across an article about [Parallel's Monitor API](https://parallel.ai/blog
    go mod tidy
 
 2. Copy the example env file and fill in your API keys:
-cp .env.example .env
-3. Start Postgres and Redis:
-docker compose up -d
-4. Run the API server and worker:
-go run ./cmd/api
-go run ./cmd/worker
+   ```bash
+   cp .env.example .env
+   ```
 
-Slack Commands
+3. Start Postgres and Redis:
+   ```bash
+   docker compose up -d
+   ```
+
+4. Run the API server and worker:
+   ```bash
+   go run ./cmd/api
+   go run ./cmd/worker
+   ```
+
+#### Environment Variables
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | Postgres connection string |
+| `REDIS_URL` | Redis address |
+| `SERPER_API_KEY` | [Serper](https://serper.dev) API key |
+| `ANTHROPIC_API_KEY` | [Anthropic](https://console.anthropic.com) API key |
+| `PARALLEL_API_KEY` | [Parallel](https://parallel.ai) API key |
+| `SLACK_WEBHOOK_URL` | Slack incoming webhook URL for results |
+
+#### Slack Commands
 ```
 ┌───────────────────┬──────────────────────────┐
 │      Command      │       Description        │
