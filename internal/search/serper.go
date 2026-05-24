@@ -46,7 +46,7 @@ func (c *Client) Search(ctx context.Context, query string) ([]Result, error) {
 	}
 
 	// build JSON req body
-	body, err := json.Marshal(map[string]string{"q": query})
+	body, err := json.Marshal(map[string]string{"q": query, "tbs": "qdr:d"})
 	if err != nil {
 		return nil, fmt.Errorf("marshal: %w", err)
 	}
