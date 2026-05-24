@@ -9,6 +9,7 @@ import (
 	"github.com/goshanraj-g/vigil/internal/ai"
 	"github.com/goshanraj-g/vigil/internal/db"
 	"github.com/goshanraj-g/vigil/internal/dedup"
+	"github.com/goshanraj-g/vigil/internal/scraper"
 	"github.com/goshanraj-g/vigil/internal/search"
 	"github.com/goshanraj-g/vigil/internal/worker"
 	"github.com/hibiken/asynq"
@@ -41,7 +42,8 @@ func main() {
 		log.Fatalf("dedup: %v", err)
 	}
 
-	h := worker.New(pool, sc, ac, dc)
+	scraperClient := scraper.New()
+	h := worker.New(pool, sc, ac, dc, scraperClient)
 
 	redisURL := os.Getenv("REDIS_URL")
 

@@ -19,3 +19,5 @@ CREATE TABLE results (
 );
 
 CREATE INDEX ON results(monitor_id);
+
+ALTER TABLE results ADD COLUMN summary TEXT;
