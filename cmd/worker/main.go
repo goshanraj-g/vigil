@@ -42,7 +42,10 @@ func main() {
 		log.Fatalf("dedup: %v", err)
 	}
 
-	scraperClient := scraper.New()
+	scraperClient, err := scraper.New()
+	if err != nil {
+		log.Fatalf("scraper: %v", err)
+	}
 	h := worker.New(pool, sc, ac, dc, scraperClient)
 
 	redisURL := os.Getenv("REDIS_URL")
